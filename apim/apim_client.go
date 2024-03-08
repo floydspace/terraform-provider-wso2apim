@@ -365,12 +365,12 @@ func GetApplication(applicationID string) (*ApplicationSearchInfo, error) {
 	if err != nil {
 		return nil, err
 	}
-	var resp *ApplicationSearchInfo
-	err = send(ApplicationSearchContext, req, resp, http.StatusOK)
+	var resp ApplicationSearchInfo
+	err = send(ApplicationSearchContext, req, &resp, http.StatusOK)
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	return &resp, nil
 }
 
 func defaultApplicationKeyGenerateReq() *ApplicationKeyGenerateRequest {

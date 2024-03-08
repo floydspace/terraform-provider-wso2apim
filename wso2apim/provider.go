@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/floydspace/terraform-provider-wso2apim/apim"
+	"github.com/floydspace/terraform-provider-wso2apim/token"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
@@ -13,8 +14,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+	"github.com/wso2/openservicebroker-apim/pkg/client"
 	apimCfg "github.com/wso2/openservicebroker-apim/pkg/config"
-	"github.com/wso2/openservicebroker-apim/pkg/token"
 )
 
 // Ensure the implementation satisfies the expected interfaces
@@ -179,6 +180,14 @@ func (p *wso2apimProvider) Configure(ctx context.Context, req provider.Configure
 		StoreSubscriptionContext:         "/api/am/store/v1/subscriptions",
 		StoreMultipleSubscriptionContext: "/api/am/store/v1/subscriptions/multiple",
 	}
+
+	client.Configure(&apimCfg.Client{
+		InsecureCon: true,
+		MinBackOff:  1,
+		MaxBackOff:  60,
+		Timeout:     30,
+		MaxRetries:  3,
+	})
 
 	// Initialize Token manager.
 	tManager := &token.PasswordRefreshTokenGrantManager{

@@ -41,3 +41,6 @@ override.tf.json
 .terraformrc
 terraform.rc
 terraform
+
+# Ignore build artifacts
+terraform-provider-wso2apim

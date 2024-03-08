@@ -218,7 +218,9 @@ func (p *wso2apimProvider) Configure(ctx context.Context, req provider.Configure
 
 // DataSources defines the data sources implemented in the provider.
 func (p *wso2apimProvider) DataSources(_ context.Context) []func() datasource.DataSource {
-	return []func() datasource.DataSource{}
+	return []func() datasource.DataSource{
+		NewApplicationDataSource,
+	}
 }
 
 // Resources defines the resources implemented in the provider.

@@ -17,7 +17,6 @@ import (
 // Ensure the implementation satisfies the expected interfaces.
 var (
 	_ resource.Resource                = &applicationResource{}
-	_ resource.ResourceWithConfigure   = &applicationResource{}
 	_ resource.ResourceWithImportState = &applicationResource{}
 )
 
@@ -284,10 +283,6 @@ func (r *applicationResource) Delete(ctx context.Context, req resource.DeleteReq
 		)
 		return
 	}
-}
-
-// Configure adds the provider configured client to the resource.
-func (r *applicationResource) Configure(_ context.Context, req resource.ConfigureRequest, _ *resource.ConfigureResponse) {
 }
 
 func (r *applicationResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {

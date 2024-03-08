@@ -33,6 +33,7 @@ resource "wso2apim_application" "example" {
 
 ### Optional
 
+- `attributes` (Map of String) Attributes of the application.
 - `description` (String) Description of the application.
 
 ### Read-Only

@@ -167,16 +167,17 @@ func (p *wso2apimProvider) Configure(ctx context.Context, req provider.Configure
 
 	tflog.Debug(ctx, "Creating WSO2 API Manager client")
 
-	apimConf := apimCfg.APIM{
+	apimConf := apim.APIM{
 		Username:                         username,
 		Password:                         password,
 		TokenEndpoint:                    host + "/oauth2",
 		DynamicClientEndpoint:            host,
 		DynamicClientRegistrationContext: "/client-registration/v0.17/register",
-		// PublisherEndpoint:                host,
-		// PublisherAPIContext:              "/api/am/publisher/v1/apis",
+		PublisherEndpoint:                host,
+		PublisherAPIContext:              "/api/am/publisher/v1/apis",
 		StoreEndpoint:                    host,
 		StoreApplicationContext:          "/api/am/store/v1/applications",
+		StoreKeyManagerContext:           "/api/am/store/v1/key-managers",
 		StoreSubscriptionContext:         "/api/am/store/v1/subscriptions",
 		StoreMultipleSubscriptionContext: "/api/am/store/v1/subscriptions/multiple",
 	}
@@ -197,7 +198,7 @@ func (p *wso2apimProvider) Configure(ctx context.Context, req provider.Configure
 		UserName:                         apimConf.Username,
 		Password:                         apimConf.Password,
 	}
-	tManager.Init([]string{token.ScopeSubscribe, "apim:app_manage"})
+	tManager.Init([]string{token.ScopeSubscribe, token.ScopeAPIView, "apim:app_manage"})
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -219,6 +220,7 @@ func (p *wso2apimProvider) Configure(ctx context.Context, req provider.Configure
 // DataSources defines the data sources implemented in the provider.
 func (p *wso2apimProvider) DataSources(_ context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
+		NewApiDataSource,
 		NewApplicationDataSource,
 	}
 }

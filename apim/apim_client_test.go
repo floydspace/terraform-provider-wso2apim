@@ -24,7 +24,6 @@ import (
 	"testing"
 
 	"github.com/jarcoal/httpmock"
-	"github.com/wso2/openservicebroker-apim/pkg/config"
 )
 
 const (
@@ -51,7 +50,7 @@ func (m *MockTokenManager) Init(scopes []string) {
 }
 
 func init() {
-	Init(&MockTokenManager{}, config.APIM{
+	Init(&MockTokenManager{}, APIM{
 		StoreEndpoint:                    StoreTestEndpoint,
 		StoreApplicationContext:          StoreApplicationContext,
 		StoreSubscriptionContext:         StoreSubscriptionContext,

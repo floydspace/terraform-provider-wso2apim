@@ -28,7 +28,6 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/wso2/openservicebroker-apim/pkg/client"
-	"github.com/wso2/openservicebroker-apim/pkg/config"
 	"github.com/wso2/openservicebroker-apim/pkg/log"
 	"github.com/wso2/openservicebroker-apim/pkg/token"
 	"github.com/wso2/openservicebroker-apim/pkg/utils"
@@ -51,6 +50,7 @@ const (
 var (
 	publisherAPIEndpoint              string
 	storeApplicationEndpoint          string
+	storeKeyManagerEndpoint           string
 	storeSubscriptionEndpoint         string
 	storeMultipleSubscriptionEndpoint string
 	applicationDashBoardURLBase       string
@@ -59,11 +59,12 @@ var (
 )
 
 // Init function initialize the API-M client. If there is an error, process exists with a panic.
-func Init(manager token.Manager, conf config.APIM) {
+func Init(manager token.Manager, conf APIM) {
 	once.Do(func() {
 		tokenManager = manager
 		publisherAPIEndpoint = createEndpoint(conf.PublisherEndpoint, conf.PublisherAPIContext)
 		storeApplicationEndpoint = createEndpoint(conf.StoreEndpoint, conf.StoreApplicationContext)
+		storeKeyManagerEndpoint = createEndpoint(conf.StoreEndpoint, conf.StoreKeyManagerContext)
 		storeSubscriptionEndpoint = createEndpoint(conf.StoreEndpoint, conf.StoreSubscriptionContext)
 		storeMultipleSubscriptionEndpoint = createEndpoint(conf.StoreEndpoint, conf.StoreMultipleSubscriptionContext)
 		applicationDashBoardURLBase = createEndpoint(conf.StoreEndpoint, "/devportal/applications/")
@@ -332,6 +333,23 @@ func SearchAPIByNameVersion(apiName, version string) (string, error) {
 		return "", errors.New(fmt.Sprintf("returned more than one API for API %s", apiName))
 	}
 	return resp.List[0].ID, nil
+}
+
+func GetAPI(apiID string) (*APISearchInfo, error) {
+	endpoint, err := utils.ConstructURL(publisherAPIEndpoint, apiID)
+	if err != nil {
+		return nil, err
+	}
+	req, err := creatHTTPGETAPIRequest(endpoint)
+	if err != nil {
+		return nil, err
+	}
+	var resp APISearchInfo
+	err = send(APISearchContext, req, &resp, http.StatusOK)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
 }
 
 // SearchApplication method returns Application ID of the Given Application.

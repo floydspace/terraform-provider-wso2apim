@@ -18,6 +18,22 @@
 
 package apim
 
+// APIM represents the information required to interact with the APIM.
+type APIM struct {
+	Username                         string `mapstructure:"username"`
+	Password                         string `mapstructure:"password"`
+	TokenEndpoint                    string `mapstructure:"tokenEndpoint"`
+	DynamicClientEndpoint            string `mapstructure:"dynamicClientEndpoint"`
+	DynamicClientRegistrationContext string `mapstructure:"dynamicClientRegistrationContext"`
+	PublisherEndpoint                string `mapstructure:"publisherEndpoint"`
+	PublisherAPIContext              string `mapstructure:"publisherAPIContext"`
+	StoreApplicationContext          string `mapstructure:"storeApplicationContext"`
+	StoreKeyManagerContext           string `mapstructure:"storeKeyManagerContext"`
+	StoreSubscriptionContext         string `mapstructure:"storeSubscriptionContext"`
+	StoreMultipleSubscriptionContext string `mapstructure:"storeMultipleSubscriptionContext"`
+	StoreEndpoint                    string `mapstructure:"storeEndpoint"`
+}
+
 // APIMaxTps represents the max TPS(Transactions per second) for an API.
 type APIMaxTps struct {
 	Production int64 `json:"production,omitempty"`
@@ -257,13 +273,15 @@ type SubscriptionRespApiInfo struct {
 
 // APISearchInfo represents the API search information.
 type APISearchInfo struct {
-	Provider    string `json:"provider"`
-	Version     string `json:"version"`
-	Description string `json:"description"`
-	Status      string `json:"status"`
-	Name        string `json:"name"`
-	Context     string `json:"context"`
-	ID          string `json:"id"`
+	ID              string `json:"id"`
+	Name            string `json:"name"`
+	Description     string `json:"description"`
+	Context         string `json:"context"`
+	Version         string `json:"version"`
+	Provider        string `json:"provider"`
+	Type            string `json:"type"`
+	LifeCycleStatus string `json:"lifeCycleStatus"`
+	HasThumbnail    bool   `json:"hasThumbnail"`
 }
 
 // APISearchResp represents the response of search "API" by name API call.

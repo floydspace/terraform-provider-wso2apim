@@ -140,10 +140,11 @@ type ApplicationMetadata struct {
 
 // ApplicationCreateReq represents the response of create Application API call.
 type ApplicationCreateReq struct {
-	ThrottlingPolicy string `json:"throttlingPolicy"`
-	TokenType        string `json:"tokenType"`
-	Description      string `json:"description,omitempty"`
-	Name             string `json:"name,omitempty"`
+	ThrottlingPolicy string            `json:"throttlingPolicy"`
+	TokenType        string            `json:"tokenType"`
+	Description      string            `json:"description,omitempty"`
+	Name             string            `json:"name,omitempty"`
+	Attributes       map[string]string `json:"attributes,omitempty"`
 }
 
 // APIParam represents the structure for API plan parameters.
@@ -275,14 +276,15 @@ type APISearchResp struct {
 
 // ApplicationSearchInfo represents the Application search information.
 type ApplicationSearchInfo struct {
-	ApplicationID     string `json:"applicationId"`
-	Name              string `json:"name"`
-	ThrottlingPolicy  string `json:"throttlingPolicy"`
-	Description       string `json:"description"`
-	Status            string `json:"status"`
-	SubscriptionCount int    `json:"subscriptionCount"`
-	Owner             string `json:"owner"`
-	TokenType         string `json:"tokenType"`
+	ApplicationID     string            `json:"applicationId"`
+	Name              string            `json:"name"`
+	ThrottlingPolicy  string            `json:"throttlingPolicy"`
+	Description       string            `json:"description"`
+	Status            string            `json:"status"`
+	SubscriptionCount int               `json:"subscriptionCount"`
+	Attributes        map[string]string `json:"attributes"`
+	Owner             string            `json:"owner"`
+	TokenType         string            `json:"tokenType"`
 }
 
 // ApplicationSearchResp represents the response of search Application by name API call.

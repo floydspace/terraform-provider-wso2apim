@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/floydspace/terraform-provider-wso2apim/apim"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -37,6 +38,7 @@ type applicationResourceModel struct {
 	Description       types.String `tfsdk:"description"`
 	Status            types.String `tfsdk:"status"`
 	SubscriptionCount types.Int64  `tfsdk:"subscription_count"`
+	Attributes        types.Map    `tfsdk:"attributes"`
 	Owner             types.String `tfsdk:"owner"`
 	TokenType         types.String `tfsdk:"token_type"`
 	LastUpdated       types.String `tfsdk:"last_updated"`
@@ -79,6 +81,11 @@ func (r *applicationResource) Schema(_ context.Context, _ resource.SchemaRequest
 				Description: "Number of subscriptions to the application.",
 				Computed:    true,
 			},
+			"attributes": schema.MapAttribute{
+				Description: "Attributes of the application.",
+				ElementType: types.StringType,
+				Optional:    true,
+			},
 			"owner": schema.StringAttribute{
 				Description: "Owner of the application.",
 				Computed:    true,
@@ -105,12 +112,20 @@ func (r *applicationResource) Create(ctx context.Context, req resource.CreateReq
 		return
 	}
 
+	var attributes map[string]string
+	diags = plan.Attributes.ElementsAs(ctx, &attributes, false)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	// Create new application
 	application, err := apim.CreateApplication(&apim.ApplicationCreateReq{
 		Name:             plan.Name.ValueString(),
 		TokenType:        plan.TokenType.ValueString(),
 		ThrottlingPolicy: plan.ThrottlingPolicy.ValueString(),
 		Description:      plan.Description.ValueString(),
+		Attributes:       attributes,
 	})
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -127,6 +142,11 @@ func (r *applicationResource) Create(ctx context.Context, req resource.CreateReq
 	plan.Description = types.StringValue(application.Description)
 	plan.Status = types.StringValue(application.Status)
 	plan.SubscriptionCount = types.Int64Value(int64(application.SubscriptionCount))
+	appAttributes := make(map[string]attr.Value)
+	for k, v := range application.Attributes {
+		appAttributes[k] = types.StringValue(v)
+	}
+	plan.Attributes = types.MapValueMust(types.StringType, appAttributes)
 	plan.Owner = types.StringValue(application.Owner)
 	plan.TokenType = types.StringValue(application.TokenType)
 	plan.LastUpdated = types.StringValue(time.Now().Format(time.RFC3339))
@@ -165,6 +185,11 @@ func (r *applicationResource) Read(ctx context.Context, req resource.ReadRequest
 	state.Description = types.StringValue(application.Description)
 	state.Status = types.StringValue(application.Status)
 	state.SubscriptionCount = types.Int64Value(int64(application.SubscriptionCount))
+	appAttributes := make(map[string]attr.Value)
+	for k, v := range application.Attributes {
+		appAttributes[k] = types.StringValue(v)
+	}
+	state.Attributes = types.MapValueMust(types.StringType, appAttributes)
 	state.Owner = types.StringValue(application.Owner)
 	state.TokenType = types.StringValue(application.TokenType)
 
@@ -195,12 +220,20 @@ func (r *applicationResource) Update(ctx context.Context, req resource.UpdateReq
 		return
 	}
 
+	var attributes map[string]string
+	diags = plan.Attributes.ElementsAs(ctx, &attributes, false)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	// Create new application
 	application, err := apim.CreateApplication(&apim.ApplicationCreateReq{
 		Name:             plan.Name.ValueString(),
 		TokenType:        plan.TokenType.ValueString(),
 		ThrottlingPolicy: plan.ThrottlingPolicy.ValueString(),
 		Description:      plan.Description.ValueString(),
+		Attributes:       attributes,
 	})
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -217,6 +250,11 @@ func (r *applicationResource) Update(ctx context.Context, req resource.UpdateReq
 	plan.Description = types.StringValue(application.Description)
 	plan.Status = types.StringValue(application.Status)
 	plan.SubscriptionCount = types.Int64Value(int64(application.SubscriptionCount))
+	appAttributes := make(map[string]attr.Value)
+	for k, v := range application.Attributes {
+		appAttributes[k] = types.StringValue(v)
+	}
+	plan.Attributes = types.MapValueMust(types.StringType, appAttributes)
 	plan.Owner = types.StringValue(application.Owner)
 	plan.TokenType = types.StringValue(application.TokenType)
 	plan.LastUpdated = types.StringValue(time.Now().Format(time.RFC3339))

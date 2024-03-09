@@ -82,14 +82,17 @@ func createEndpoint(paths ...string) string {
 
 // CreateAPI function creates an API with the provided API spec.
 // Returns the API ID and any error encountered.
-func CreateAPI(reqBody *APIReqBody) (string, error) {
+func CreateAPI(reqBody *APIReqBody) (*APICreateResp, error) {
 	req, err := creatHTTPPOSTAPIRequest(publisherAPIEndpoint, reqBody)
+	if err != nil {
+		return nil, err
+	}
 	var resBody APICreateResp
 	err = send(CreateAPIContext, req, &resBody, http.StatusCreated)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return resBody.ID, nil
+	return &resBody, nil
 }
 
 // GetAppDashboardURL returns DashBoard URL for the given Application.

@@ -143,7 +143,12 @@ type APIReqBody struct {
 // APICreateResp represents the response of create "API" API call.
 type APICreateResp struct {
 	// UUID of the api registry artifact
-	ID string `json:"id,omitempty"`
+	ID          string `json:"id,omitempty"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Context     string `json:"context"`
+	Version     string `json:"version"`
+	Provider    string `json:"provider,omitempty"`
 }
 
 // ApplicationMetadata represents name, id and key of the generated application

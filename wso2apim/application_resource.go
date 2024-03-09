@@ -9,6 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/mapplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -63,14 +64,23 @@ func (r *applicationResource) Schema(_ context.Context, _ resource.SchemaRequest
 			"name": schema.StringAttribute{
 				Description: "Name of the application.",
 				Required:    true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 			},
 			"throttling_policy": schema.StringAttribute{
 				Description: "Application throttling policy.",
 				Required:    true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 			},
 			"description": schema.StringAttribute{
 				Description: "Description of the application.",
 				Optional:    true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 			},
 			"status": schema.StringAttribute{
 				Description: "Status of the application.",
@@ -84,6 +94,9 @@ func (r *applicationResource) Schema(_ context.Context, _ resource.SchemaRequest
 				Description: "Attributes of the application.",
 				ElementType: types.StringType,
 				Optional:    true,
+				PlanModifiers: []planmodifier.Map{
+					mapplanmodifier.RequiresReplace(),
+				},
 			},
 			"owner": schema.StringAttribute{
 				Description: "Owner of the application.",
@@ -92,6 +105,9 @@ func (r *applicationResource) Schema(_ context.Context, _ resource.SchemaRequest
 			"token_type": schema.StringAttribute{
 				Description: "Token type of the application.",
 				Required:    true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 			},
 			"last_updated": schema.StringAttribute{
 				Description: "Last updated timestamp.",

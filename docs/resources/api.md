@@ -33,16 +33,25 @@ resource "wso2apim_api" "example" {
 
 ### Optional
 
+- `api_provider` (String) Provider of the api.
 - `description` (String) Description of the api.
+- `operations` (Attributes List) Operations of the api (Resources). (see [below for nested schema](#nestedatt--operations))
+- `type` (String) Type of the api.
 
 ### Read-Only
 
-- `api_provider` (String) Provider of the api.
 - `has_thumbnail` (Boolean) Whether the api has a thumbnail.
 - `id` (String) Api ID.
 - `last_updated` (String) Last updated timestamp.
 - `lifecycle_status` (String) LifeCycle status of the api.
-- `type` (String) Type of the api.
+
+<a id="nestedatt--operations"></a>
+### Nested Schema for `operations`
+
+Optional:
+
+- `target` (String) Operation target.
+- `verb` (String) Operation verb.
 
 ## Import
 

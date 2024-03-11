@@ -38,6 +38,7 @@ const (
 	CreateApplicationContext          = "create application"
 	CreateMultipleSubscriptionContext = "create multiple subscriptions"
 	UpdateApplicationContext          = "update application"
+	UpdateAPIContext                  = "update API"
 	GenerateKeyContext                = "Generate application keys"
 	UnSubscribeContext                = "unsubscribe api"
 	ApplicationDeleteContext          = "delete application"
@@ -89,6 +90,25 @@ func CreateAPI(reqBody *APIReqBody) (*APICreateResp, error) {
 	}
 	var resBody APICreateResp
 	err = send(CreateAPIContext, req, &resBody, http.StatusCreated)
+	if err != nil {
+		return nil, err
+	}
+	return &resBody, nil
+}
+
+// UpdateAPI updates an existing API under the given ID with the provided API spec.
+// Returns the updated API and any error encountered.
+func UpdateAPI(id string, reqBody *APIReqBody) (*APICreateResp, error) {
+	endpoint, err := utils.ConstructURL(publisherAPIEndpoint, id)
+	if err != nil {
+		return nil, err
+	}
+	req, err := creatHTTPPUTAPIRequest(endpoint, reqBody)
+	if err != nil {
+		return nil, err
+	}
+	var resBody APICreateResp
+	err = send(UpdateAPIContext, req, &resBody, http.StatusOK)
 	if err != nil {
 		return nil, err
 	}

@@ -26,6 +26,7 @@ provider "wso2apim" {
 
 ### Optional
 
+- `api_context_prefix` (String) WSO2 API Manager API Context Prefix.
 - `host` (String) WSO2 API Manager Hostname. May also be provided via the WSO2_APIM_HOST environment variable.
 - `password` (String, Sensitive) WSO2 API Manager Password. May also be provided via the WSO2_APIM_PASSWORD environment variable.
 - `username` (String) WSO2 API Manager Username. May also be provided via the WSO2_APIM_USERNAME environment variable.

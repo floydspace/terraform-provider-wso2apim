@@ -24,16 +24,31 @@ var (
 )
 
 // New is a helper function to simplify provider server and testing implementation.
-func New() provider.Provider {
-	return &wso2apimProvider{}
+func New(version string) func() provider.Provider {
+	return func() provider.Provider {
+		return &wso2apimProvider{
+			version: version,
+		}
+	}
 }
 
 // wso2apimProvider is the provider implementation.
-type wso2apimProvider struct{}
+type wso2apimProvider struct {
+	version string
+}
+
+// wso2apimProviderModel maps provider schema data to a Go type.
+type wso2apimProviderModel struct {
+	Host             types.String `tfsdk:"host"`
+	Username         types.String `tfsdk:"username"`
+	Password         types.String `tfsdk:"password"`
+	ApiContextPrefix types.String `tfsdk:"api_context_prefix"`
+}
 
 // Metadata returns the provider type name.
 func (p *wso2apimProvider) Metadata(_ context.Context, _ provider.MetadataRequest, resp *provider.MetadataResponse) {
 	resp.TypeName = "wso2apim"
+	resp.Version = p.version
 }
 
 // Schema defines the provider-level schema for configuration data.
@@ -53,6 +68,10 @@ func (p *wso2apimProvider) Schema(_ context.Context, _ provider.SchemaRequest, r
 				Description: "WSO2 API Manager Password. May also be provided via the WSO2_APIM_PASSWORD environment variable.",
 				Optional:    true,
 				Sensitive:   true,
+			},
+			"api_context_prefix": schema.StringAttribute{
+				Description: "WSO2 API Manager API Context Prefix.",
+				Optional:    true,
 			},
 		},
 	}
@@ -198,7 +217,13 @@ func (p *wso2apimProvider) Configure(ctx context.Context, req provider.Configure
 		UserName:                         apimConf.Username,
 		Password:                         apimConf.Password,
 	}
-	tManager.Init([]string{token.ScopeSubscribe, token.ScopeAPIView, "apim:app_manage"})
+	tManager.Init([]string{
+		token.ScopeSubscribe,
+		token.ScopeAPIView,
+		token.ScopeAPICreate,
+		token.ScopeAPIDelete,
+		token.ScopeAppManage,
+	})
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -213,6 +238,8 @@ func (p *wso2apimProvider) Configure(ctx context.Context, req provider.Configure
 
 	// Create a new WSO2 client using the configuration values
 	apim.Init(tManager, apimConf)
+
+	resp.ResourceData = &config
 
 	tflog.Info(ctx, "Configured WSO2 API Manager client", map[string]any{"success": true})
 }
@@ -231,11 +258,4 @@ func (p *wso2apimProvider) Resources(_ context.Context) []func() resource.Resour
 		NewApiResource,
 		NewApplicationResource,
 	}
-}
-
-// wso2apimProviderModel maps provider schema data to a Go type.
-type wso2apimProviderModel struct {
-	Host     types.String `tfsdk:"host"`
-	Username types.String `tfsdk:"username"`
-	Password types.String `tfsdk:"password"`
 }

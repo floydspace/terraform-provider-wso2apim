@@ -61,6 +61,14 @@ type Label struct {
 	Description string `json:"description,omitempty"`
 }
 
+// APIOperation represents the API operation.
+type APIOperation struct {
+	ID     string `json:"id,omitempty"`
+	Target string `json:"target,omitempty"`
+	Verb   string `json:"verb,omitempty"`
+	// TODO: Add the rest of the fields
+}
+
 // APIBusinessInformation represents the  API business information.
 type APIBusinessInformation struct {
 	BusinessOwner       string `json:"businessOwner,omitempty"`
@@ -80,75 +88,78 @@ type APICorsConfiguration struct {
 
 // APIReqBody represents the request of create "API" API call.
 type APIReqBody struct {
-	ID string `json:"id"`
 	// Name of the API
 	Name string `json:"name"`
 	// A brief description about the API
-	Description string `json:"description"`
+	Description *string `json:"description"`
 	// A string that represents the context of the user's request
 	Context string `json:"context"`
 	// The version of the API
 	Version string `json:"version"`
 	// If the provider value is not given, the user invoking the API will be used as the provider.
-	Provider string `json:"provider,omitempty"`
+	Provider *string `json:"provider,omitempty"`
 	// This describes in which status of the lifecycle the API is
-	Status       string `json:"status"`
-	ThumbnailURI string `json:"thumbnailUri,omitempty"`
-	// Swagger definition of the API which contains details about URI templates and scopes
-	APIDefinition string `json:"apiDefinition"`
-	// WSDL URL if the API is based on a WSDL endpoint
-	WsdlURI                 string `json:"wsdlUri,omitempty"`
-	ResponseCaching         string `json:"responseCaching,omitempty"`
-	CacheTimeout            int32  `json:"cacheTimeout,omitempty"`
-	DestinationStatsEnabled bool   `json:"destinationStatsEnabled,omitempty"`
-	IsDefaultVersion        bool   `json:"isDefaultVersion"`
+	// ThumbnailURI string `json:"thumbnailUri,omitempty"`
+	// // Swagger definition of the API which contains details about URI templates and scopes
+	// APIDefinition string `json:"apiDefinition"`
+	// // WSDL URL if the API is based on a WSDL endpoint
+	// WsdlURI                 string `json:"wsdlUri,omitempty"`
+	// ResponseCaching         string `json:"responseCaching,omitempty"`
+	// CacheTimeout            int32  `json:"cacheTimeout,omitempty"`
+	// DestinationStatsEnabled bool   `json:"destinationStatsEnabled,omitempty"`
+	// IsDefaultVersion        bool   `json:"isDefaultVersion"`
 	// The transport to be set. Accepted values are HTTP, WS
-	Type string `json:"type"`
-	// Supported transports for the API (http and/or https).
-	Transport []string `json:"transport" hash:"set"`
-	// Search keywords related to the API
-	Tags []string `json:"tags,omitempty" hash:"set"`
-	// The subscription tiers selected for the particular API
-	Tiers []string `json:"tiers" hash:"set"`
-	// The policy selected for the particular API
-	APILevelPolicy string `json:"apiLevelPolicy,omitempty"`
-	// Name of the Authorization header used for invoking the API. If it is not set, Authorization header name specified in tenant or system level will be used.
-	AuthorizationHeader string     `json:"authorizationHeader,omitempty"`
-	MaxTps              *APIMaxTps `json:"maxTps,omitempty"`
-	// The visibility level of the API. Accepts one of the following. PUBLIC, PRIVATE, RESTRICTED OR CONTROLLED.
-	Visibility string `json:"visibility"`
-	// The user roles that are able to access the API
-	VisibleRoles     []string             `json:"visibleRoles,omitempty" hash:"set"`
-	VisibleTenants   []string             `json:"visibleTenants,omitempty" hash:"set"`
-	EndpointConfig   string               `json:"endpointConfig"`
-	EndpointSecurity *APIEndpointSecurity `json:"endpointSecurity,omitempty"`
-	// Comma separated list of gateway environments.
-	GatewayEnvironments string `json:"gatewayEnvironments,omitempty"`
-	// Labels of micro-gateway environments attached to the API.
-	Labels    []Label    `json:"labels,omitempty" hash:"set"`
-	Sequences []Sequence `json:"sequences,omitempty" hash:"set"`
-	// The subscription availability. Accepts one of the following. current_tenant, all_tenants or specific_tenants.
-	SubscriptionAvailability     string   `json:"subscriptionAvailability,omitempty"`
-	SubscriptionAvailableTenants []string `json:"subscriptionAvailableTenants,omitempty"`
-	// Map of custom properties of API
-	AdditionalProperties map[string]string `json:"additionalProperties,omitempty" hash:"set"`
-	// Is the API is restricted to certain set of publishers or creators or is it visible to all the publishers and creators. If the accessControl restriction is none, this API can be modified by all the publishers and creators, if not it can only be viewable/modifiable by certain set of publishers and creators,  based on the restriction.
-	AccessControl string `json:"accessControl,omitempty"`
-	// The user roles that are able to view/modify as API publisher or creator.
-	AccessControlRoles  []string                `json:"accessControlRoles,omitempty"`
-	BusinessInformation *APIBusinessInformation `json:"businessInformation,omitempty"`
-	CorsConfiguration   *APICorsConfiguration   `json:"corsConfiguration,omitempty"`
+	Type       *string        `json:"type,omitempty"`
+	Operations []APIOperation `json:"operations,omitempty" hash:"set"`
+	// // Supported transports for the API (http and/or https).
+	// Transport []string `json:"transport" hash:"set"`
+	// // Search keywords related to the API
+	// Tags []string `json:"tags,omitempty" hash:"set"`
+	// // The subscription tiers selected for the particular API
+	// Tiers []string `json:"tiers" hash:"set"`
+	// // The policy selected for the particular API
+	// APILevelPolicy string `json:"apiLevelPolicy,omitempty"`
+	// // Name of the Authorization header used for invoking the API. If it is not set, Authorization header name specified in tenant or system level will be used.
+	// AuthorizationHeader string     `json:"authorizationHeader,omitempty"`
+	// MaxTps              *APIMaxTps `json:"maxTps,omitempty"`
+	// // The visibility level of the API. Accepts one of the following. PUBLIC, PRIVATE, RESTRICTED OR CONTROLLED.
+	// Visibility string `json:"visibility"`
+	// // The user roles that are able to access the API
+	// VisibleRoles     []string             `json:"visibleRoles,omitempty" hash:"set"`
+	// VisibleTenants   []string             `json:"visibleTenants,omitempty" hash:"set"`
+	// EndpointConfig   string               `json:"endpointConfig"`
+	// EndpointSecurity *APIEndpointSecurity `json:"endpointSecurity,omitempty"`
+	// // Comma separated list of gateway environments.
+	// GatewayEnvironments string `json:"gatewayEnvironments,omitempty"`
+	// // Labels of micro-gateway environments attached to the API.
+	// Labels    []Label    `json:"labels,omitempty" hash:"set"`
+	// Sequences []Sequence `json:"sequences,omitempty" hash:"set"`
+	// // The subscription availability. Accepts one of the following. current_tenant, all_tenants or specific_tenants.
+	// SubscriptionAvailability     string   `json:"subscriptionAvailability,omitempty"`
+	// SubscriptionAvailableTenants []string `json:"subscriptionAvailableTenants,omitempty"`
+	// // Map of custom properties of API
+	// AdditionalProperties map[string]string `json:"additionalProperties,omitempty" hash:"set"`
+	// // Is the API is restricted to certain set of publishers or creators or is it visible to all the publishers and creators. If the accessControl restriction is none, this API can be modified by all the publishers and creators, if not it can only be viewable/modifiable by certain set of publishers and creators,  based on the restriction.
+	// AccessControl string `json:"accessControl,omitempty"`
+	// // The user roles that are able to view/modify as API publisher or creator.
+	// AccessControlRoles  []string                `json:"accessControlRoles,omitempty"`
+	// BusinessInformation *APIBusinessInformation `json:"businessInformation,omitempty"`
+	// CorsConfiguration   *APICorsConfiguration   `json:"corsConfiguration,omitempty"`
 }
 
 // APICreateResp represents the response of create "API" API call.
 type APICreateResp struct {
 	// UUID of the api registry artifact
-	ID          string `json:"id,omitempty"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Context     string `json:"context"`
-	Version     string `json:"version"`
-	Provider    string `json:"provider,omitempty"`
+	ID              string         `json:"id,omitempty"`
+	Name            string         `json:"name"`
+	Description     string         `json:"description"`
+	Context         string         `json:"context"`
+	Version         string         `json:"version"`
+	Provider        string         `json:"provider,omitempty"`
+	Type            string         `json:"type"`
+	LifeCycleStatus string         `json:"lifeCycleStatus"`
+	HasThumbnail    bool           `json:"hasThumbnail"`
+	Operations      []APIOperation `json:"operations" hash:"set"`
 }
 
 // ApplicationMetadata represents name, id and key of the generated application
@@ -278,15 +289,16 @@ type SubscriptionRespApiInfo struct {
 
 // APISearchInfo represents the API search information.
 type APISearchInfo struct {
-	ID              string `json:"id"`
-	Name            string `json:"name"`
-	Description     string `json:"description"`
-	Context         string `json:"context"`
-	Version         string `json:"version"`
-	Provider        string `json:"provider"`
-	Type            string `json:"type"`
-	LifeCycleStatus string `json:"lifeCycleStatus"`
-	HasThumbnail    bool   `json:"hasThumbnail"`
+	ID              string         `json:"id"`
+	Name            string         `json:"name"`
+	Description     string         `json:"description"`
+	Context         string         `json:"context"`
+	Version         string         `json:"version"`
+	Provider        string         `json:"provider"`
+	Type            string         `json:"type"`
+	LifeCycleStatus string         `json:"lifeCycleStatus"`
+	HasThumbnail    bool           `json:"hasThumbnail"`
+	Operations      []APIOperation `json:"operations" hash:"set"`
 }
 
 // APISearchResp represents the response of search "API" by name API call.

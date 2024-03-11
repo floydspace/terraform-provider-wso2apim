@@ -137,20 +137,21 @@ func CreateApplication(reqBody *ApplicationCreateReq) (*ApplicationSearchInfo, e
 
 // UpdateApplication updates an existing Application under the given ID with the provided Application spec.
 // Returns any error encountered.
-func UpdateApplication(id string, reqBody *ApplicationCreateReq) error {
+func UpdateApplication(id string, reqBody *ApplicationCreateReq) (*ApplicationSearchInfo, error) {
 	endpoint, err := utils.ConstructURL(storeApplicationEndpoint, id)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	req, err := creatHTTPPUTAPIRequest(endpoint, reqBody)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	err = send(UpdateApplicationContext, req, nil, http.StatusOK)
+	var resBody ApplicationSearchInfo
+	err = send(UpdateApplicationContext, req, &resBody, http.StatusOK)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return &resBody, nil
 }
 
 // GenerateKeys generates keys for the given application.

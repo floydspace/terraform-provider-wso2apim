@@ -5,13 +5,14 @@ import (
 	"time"
 
 	"github.com/floydspace/terraform-provider-wso2apim/apim"
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/mapplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -64,23 +65,14 @@ func (r *applicationResource) Schema(_ context.Context, _ resource.SchemaRequest
 			"name": schema.StringAttribute{
 				Description: "Name of the application.",
 				Required:    true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
-				},
 			},
 			"throttling_policy": schema.StringAttribute{
 				Description: "Application throttling policy.",
 				Required:    true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
-				},
 			},
 			"description": schema.StringAttribute{
 				Description: "Description of the application.",
 				Optional:    true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
-				},
 			},
 			"status": schema.StringAttribute{
 				Description: "Status of the application.",
@@ -94,9 +86,6 @@ func (r *applicationResource) Schema(_ context.Context, _ resource.SchemaRequest
 				Description: "Attributes of the application.",
 				ElementType: types.StringType,
 				Optional:    true,
-				PlanModifiers: []planmodifier.Map{
-					mapplanmodifier.RequiresReplace(),
-				},
 			},
 			"owner": schema.StringAttribute{
 				Description: "Owner of the application.",
@@ -104,9 +93,13 @@ func (r *applicationResource) Schema(_ context.Context, _ resource.SchemaRequest
 			},
 			"token_type": schema.StringAttribute{
 				Description: "Token type of the application.",
-				Required:    true,
+				Optional:    true,
+				Computed:    true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
+					stringplanmodifier.UseStateForUnknown(),
+				},
+				Validators: []validator.String{
+					stringvalidator.OneOf("JWT"),
 				},
 			},
 			"last_updated": schema.StringAttribute{
@@ -225,16 +218,6 @@ func (r *applicationResource) Update(ctx context.Context, req resource.UpdateReq
 		return
 	}
 
-	// Delete existing application
-	err := apim.DeleteApplication(plan.ID.ValueString())
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Error Deleting WSO2 API Manager Application",
-			"Could not delete application, unexpected error: "+err.Error(),
-		)
-		return
-	}
-
 	var attributes map[string]string
 	diags = plan.Attributes.ElementsAs(ctx, &attributes, false)
 	resp.Diagnostics.Append(diags...)
@@ -243,7 +226,7 @@ func (r *applicationResource) Update(ctx context.Context, req resource.UpdateReq
 	}
 
 	// Create new application
-	application, err := apim.CreateApplication(&apim.ApplicationCreateReq{
+	application, err := apim.UpdateApplication(plan.ID.ValueString(), &apim.ApplicationCreateReq{
 		Name:             plan.Name.ValueString(),
 		TokenType:        plan.TokenType.ValueString(),
 		ThrottlingPolicy: plan.ThrottlingPolicy.ValueString(),

@@ -172,10 +172,10 @@ type ApplicationMetadata struct {
 
 // ApplicationCreateReq represents the response of create Application API call.
 type ApplicationCreateReq struct {
+	Name             string            `json:"name"`
 	ThrottlingPolicy string            `json:"throttlingPolicy"`
-	TokenType        string            `json:"tokenType"`
 	Description      string            `json:"description,omitempty"`
-	Name             string            `json:"name,omitempty"`
+	TokenType        string            `json:"tokenType,omitempty"`
 	Attributes       map[string]string `json:"attributes,omitempty"`
 }
 

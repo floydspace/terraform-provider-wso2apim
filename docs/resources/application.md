@@ -29,12 +29,12 @@ resource "wso2apim_application" "example" {
 
 - `name` (String) Name of the application.
 - `throttling_policy` (String) Application throttling policy.
-- `token_type` (String) Token type of the application.
 
 ### Optional
 
 - `attributes` (Map of String) Attributes of the application.
 - `description` (String) Description of the application.
+- `token_type` (String) Token type of the application.
 
 ### Read-Only
 

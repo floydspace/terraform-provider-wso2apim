@@ -117,7 +117,7 @@ func testUpdateApplicationFailFunc() func(t *testing.T) {
 		}
 		httpmock.RegisterResponder(http.MethodPut, StoreTestEndpoint+StoreApplicationContext+"/id", responder)
 
-		err = UpdateApplication("id", &ApplicationCreateReq{
+		_, err = UpdateApplication("id", &ApplicationCreateReq{
 			Name: "test",
 		})
 		if err == nil {
@@ -136,7 +136,7 @@ func testUpdateApplicationSuccessFunc() func(t *testing.T) {
 		}
 		httpmock.RegisterResponder(http.MethodPut, StoreTestEndpoint+StoreApplicationContext+"/id", responder)
 
-		err = UpdateApplication("id", &ApplicationCreateReq{
+		_, err = UpdateApplication("id", &ApplicationCreateReq{
 			Name: "test",
 		})
 		if err != nil {

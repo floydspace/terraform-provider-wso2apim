@@ -221,6 +221,7 @@ func (p *wso2apimProvider) Configure(ctx context.Context, req provider.Configure
 		token.ScopeSubscribe,
 		token.ScopeAPIView,
 		token.ScopeAPICreate,
+		token.ScopeAppPublish,
 		token.ScopeAPIDelete,
 		token.ScopeAppManage,
 	})

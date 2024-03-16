@@ -330,6 +330,15 @@ type APISearchResp struct {
 	Next     string          `json:"next"`
 }
 
+type APILifecycleInfo struct {
+	State string `json:"state"`
+}
+
+type APIChangeLifeCycleResp struct {
+	WorkflowStatus string           `json:"workflowStatus"`
+	LifecycleState APILifecycleInfo `json:"lifecycleState"`
+}
+
 // ApplicationSearchInfo represents the Application search information.
 type ApplicationSearchInfo struct {
 	ApplicationID     string            `json:"applicationId"`

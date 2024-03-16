@@ -56,6 +56,7 @@ const (
 	ScopeSubscribe                  = "apim:subscribe"
 	ScopeAPIView                    = "apim:api_view"
 	ScopeAPICreate                  = "apim:api_create"
+	ScopeAppPublish                 = "apim:api_publish"
 	ScopeAPIDelete                  = "apim:api_delete"
 	ScopeAppManage                  = "apim:app_manage"
 	LogKeyAT                        = "access-token"

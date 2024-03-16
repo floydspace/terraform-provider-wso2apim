@@ -278,6 +278,19 @@ func (r *apiResource) Create(ctx context.Context, req resource.CreateRequest, re
 		return
 	}
 
+	lifecycle, err := apim.ChangeLifeCycleStatus(api.ID, "Publish")
+	if err != nil {
+		resp.Diagnostics.AddWarning(
+			"Error changing api lifecycle status",
+			"Could not change api lifecycle status to PUBLISHED, unexpected error: "+err.Error(),
+		)
+	}
+
+	lifecycleStatus := api.LifeCycleStatus
+	if lifecycle != nil {
+		lifecycleStatus = strings.ToUpper(lifecycle.LifecycleState.State)
+	}
+
 	apiContext := api.Context
 	if !r.config.ApiContextPrefix.IsUnknown() {
 		apiContext = strings.Split(api.Context, r.config.ApiContextPrefix.ValueString())[1]
@@ -291,7 +304,7 @@ func (r *apiResource) Create(ctx context.Context, req resource.CreateRequest, re
 	plan.Version = types.StringValue(api.Version)
 	plan.Provider = types.StringValue(api.Provider)
 	plan.Type = types.StringValue(api.Type)
-	plan.LifeCycleStatus = types.StringValue(api.LifeCycleStatus)
+	plan.LifeCycleStatus = types.StringValue(lifecycleStatus)
 	plan.HasThumbnail = types.BoolValue(api.HasThumbnail)
 	plan.Policies = api.Policies
 	var planOperations []apiOperationResourceModel
@@ -455,6 +468,19 @@ func (r *apiResource) Update(ctx context.Context, req resource.UpdateRequest, re
 		return
 	}
 
+	lifecycle, err := apim.ChangeLifeCycleStatus(api.ID, "Publish")
+	if err != nil {
+		resp.Diagnostics.AddWarning(
+			"Error changing api lifecycle status",
+			"Could not change api lifecycle status to PUBLISHED, unexpected error: "+err.Error(),
+		)
+	}
+
+	lifecycleStatus := api.LifeCycleStatus
+	if lifecycle != nil {
+		lifecycleStatus = strings.ToUpper(lifecycle.LifecycleState.State)
+	}
+
 	apiContext := api.Context
 	if !r.config.ApiContextPrefix.IsUnknown() {
 		apiContext = strings.Split(api.Context, r.config.ApiContextPrefix.ValueString())[1]
@@ -468,7 +494,7 @@ func (r *apiResource) Update(ctx context.Context, req resource.UpdateRequest, re
 	plan.Version = types.StringValue(api.Version)
 	plan.Provider = types.StringValue(api.Provider)
 	plan.Type = types.StringValue(api.Type)
-	plan.LifeCycleStatus = types.StringValue(api.LifeCycleStatus)
+	plan.LifeCycleStatus = types.StringValue(lifecycleStatus)
 	plan.HasThumbnail = types.BoolValue(api.HasThumbnail)
 	plan.Policies = api.Policies
 	var planOperations []apiOperationResourceModel

@@ -38,6 +38,7 @@ const (
 	CreateApplicationContext          = "create application"
 	CreateSubscriptionContext         = "create subscription"
 	CreateMultipleSubscriptionContext = "create multiple subscriptions"
+	ChangeAPILifeCycleContext         = "change API lifecycle"
 	UpdateAPIContext                  = "update API"
 	UpdateApplicationContext          = "update application"
 	UpdateSubscriptionContext         = "update subscription"
@@ -112,6 +113,27 @@ func UpdateAPI(id string, reqBody *APIReqBody) (*APICreateResp, error) {
 	}
 	var resBody APICreateResp
 	err = send(UpdateAPIContext, req, &resBody, http.StatusOK)
+	if err != nil {
+		return nil, err
+	}
+	return &resBody, nil
+}
+
+func ChangeLifeCycleStatus(apiID, action string) (*APIChangeLifeCycleResp, error) {
+	endpoint, err := utils.ConstructURL(publisherAPIEndpoint, "change-lifecycle")
+	if err != nil {
+		return nil, err
+	}
+	req, err := creatHTTPPOSTAPIRequest(endpoint, nil)
+	if err != nil {
+		return nil, err
+	}
+	q := url.Values{}
+	q.Add("apiId", apiID)
+	q.Add("action", action)
+	req.HTTPRequest().URL.RawQuery = q.Encode()
+	var resBody APIChangeLifeCycleResp
+	err = send(ChangeAPILifeCycleContext, req, &resBody, http.StatusOK)
 	if err != nil {
 		return nil, err
 	}

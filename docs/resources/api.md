@@ -35,7 +35,9 @@ resource "wso2apim_api" "example" {
 
 - `api_provider` (String) Provider of the api.
 - `description` (String) Description of the api.
+- `endpoint_config` (Attributes) Endpoint configuration of the api. (see [below for nested schema](#nestedatt--endpoint_config))
 - `operations` (Attributes List) Operations of the api (Resources). (see [below for nested schema](#nestedatt--operations))
+- `policies` (List of String) Policies of the api.
 - `type` (String) Type of the api.
 
 ### Read-Only
@@ -44,6 +46,32 @@ resource "wso2apim_api" "example" {
 - `id` (String) Api ID.
 - `last_updated` (String) Last updated timestamp.
 - `lifecycle_status` (String) LifeCycle status of the api.
+
+<a id="nestedatt--endpoint_config"></a>
+### Nested Schema for `endpoint_config`
+
+Optional:
+
+- `endpoint_type` (String) Endpoint type.
+- `production_endpoints` (Attributes) Sandbox endpoints. (see [below for nested schema](#nestedatt--endpoint_config--production_endpoints))
+- `sandbox_endpoints` (Attributes) Sandbox endpoints. (see [below for nested schema](#nestedatt--endpoint_config--sandbox_endpoints))
+
+<a id="nestedatt--endpoint_config--production_endpoints"></a>
+### Nested Schema for `endpoint_config.production_endpoints`
+
+Optional:
+
+- `url` (String) Sandbox endpoint URL.
+
+
+<a id="nestedatt--endpoint_config--sandbox_endpoints"></a>
+### Nested Schema for `endpoint_config.sandbox_endpoints`
+
+Optional:
+
+- `url` (String) Sandbox endpoint URL.
+
+
 
 <a id="nestedatt--operations"></a>
 ### Nested Schema for `operations`

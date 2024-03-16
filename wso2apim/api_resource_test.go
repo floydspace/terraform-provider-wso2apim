@@ -14,10 +14,11 @@ func TestAccApiResource(t *testing.T) {
 			{
 				Config: providerConfig + `
 resource "wso2apim_api" "test" {
-	name        = "foo-api2"
+	name        = "foo-api3"
 	description = "This is a foo API"
-	context     = "/bar2"
+	context     = "/bar3"
 	version     = "v1"
+	policies = ["Unlimited"]
 	operations = [{
 		target = "/graphql"
 		verb   = "POST"
@@ -25,10 +26,11 @@ resource "wso2apim_api" "test" {
 }
 `,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("wso2apim_api.test", "name", "foo-api2"),
+					resource.TestCheckResourceAttr("wso2apim_api.test", "name", "foo-api3"),
 					resource.TestCheckResourceAttr("wso2apim_api.test", "description", "This is a foo API"),
-					resource.TestCheckResourceAttr("wso2apim_api.test", "context", "/bar2"),
+					resource.TestCheckResourceAttr("wso2apim_api.test", "context", "/bar3"),
 					resource.TestCheckResourceAttr("wso2apim_api.test", "version", "v1"),
+					resource.TestCheckResourceAttr("wso2apim_api.test", "policies.0", "Unlimited"),
 					resource.TestCheckResourceAttr("wso2apim_api.test", "operations.0.target", "/graphql"),
 					resource.TestCheckResourceAttr("wso2apim_api.test", "operations.0.verb", "POST"),
 					resource.TestCheckResourceAttrSet("wso2apim_api.test", "id"),
@@ -46,9 +48,9 @@ resource "wso2apim_api" "test" {
 			{
 				Config: providerConfig + `
 resource "wso2apim_api" "test" {
-	name        = "foo-api2"
+	name        = "foo-api3"
 	description = "This is a foo API ?"
-	context     = "/bar2"
+	context     = "/bar3"
 	version     = "v1"
 	operations = [{
 		target = "/graphql"
@@ -57,10 +59,11 @@ resource "wso2apim_api" "test" {
 }
 			`,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("wso2apim_api.test", "name", "foo-api2"),
+					resource.TestCheckResourceAttr("wso2apim_api.test", "name", "foo-api3"),
 					resource.TestCheckResourceAttr("wso2apim_api.test", "description", "This is a foo API ?"),
-					resource.TestCheckResourceAttr("wso2apim_api.test", "context", "/bar2"),
+					resource.TestCheckResourceAttr("wso2apim_api.test", "context", "/bar3"),
 					resource.TestCheckResourceAttr("wso2apim_api.test", "version", "v1"),
+					resource.TestCheckResourceAttr("wso2apim_api.test", "policies.#", "0"),
 					resource.TestCheckResourceAttr("wso2apim_api.test", "operations.0.target", "/graphql"),
 					resource.TestCheckResourceAttr("wso2apim_api.test", "operations.0.verb", "POST"),
 				),

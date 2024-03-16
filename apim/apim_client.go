@@ -36,15 +36,18 @@ import (
 const (
 	CreateAPIContext                  = "create API"
 	CreateApplicationContext          = "create application"
+	CreateSubscriptionContext         = "create subscription"
 	CreateMultipleSubscriptionContext = "create multiple subscriptions"
-	UpdateApplicationContext          = "update application"
 	UpdateAPIContext                  = "update API"
+	UpdateApplicationContext          = "update application"
+	UpdateSubscriptionContext         = "update subscription"
 	GenerateKeyContext                = "Generate application keys"
 	UnSubscribeContext                = "unsubscribe api"
 	ApplicationDeleteContext          = "delete application"
 	APIDeleteContext                  = "delete API"
 	APISearchContext                  = "search API"
 	ApplicationSearchContext          = "search Application"
+	SubscriptionSearchContext         = "search Subscription"
 	ErrMsgAPPIDEmpty                  = "application id is empty"
 )
 
@@ -171,6 +174,36 @@ func GenerateKeys(appID string) (*ApplicationKeyResp, error) {
 	}
 	var resBody ApplicationKeyResp
 	err = send(GenerateKeyContext, req, &resBody, http.StatusOK)
+	if err != nil {
+		return nil, err
+	}
+	return &resBody, nil
+}
+
+func CreateSubscription(sub *SubscriptionReq) (*SubscriptionSearchInfo, error) {
+	req, err := creatHTTPPOSTAPIRequest(storeSubscriptionEndpoint, sub)
+	if err != nil {
+		return nil, err
+	}
+	var resBody SubscriptionSearchInfo
+	err = send(CreateSubscriptionContext, req, &resBody, http.StatusCreated)
+	if err != nil {
+		return nil, err
+	}
+	return &resBody, nil
+}
+
+func UpdateSubscription(id string, reqBody *SubscriptionReq) (*SubscriptionSearchInfo, error) {
+	endpoint, err := utils.ConstructURL(storeSubscriptionEndpoint, id)
+	if err != nil {
+		return nil, err
+	}
+	req, err := creatHTTPPUTAPIRequest(endpoint, reqBody)
+	if err != nil {
+		return nil, err
+	}
+	var resBody SubscriptionSearchInfo
+	err = send(UpdateSubscriptionContext, req, &resBody, http.StatusOK)
 	if err != nil {
 		return nil, err
 	}
@@ -409,6 +442,23 @@ func GetApplication(applicationID string) (*ApplicationSearchInfo, error) {
 	}
 	var resp ApplicationSearchInfo
 	err = send(ApplicationSearchContext, req, &resp, http.StatusOK)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+func GetSubscription(subID string) (*SubscriptionSearchInfo, error) {
+	endpoint, err := utils.ConstructURL(storeSubscriptionEndpoint, subID)
+	if err != nil {
+		return nil, err
+	}
+	req, err := creatHTTPGETAPIRequest(endpoint)
+	if err != nil {
+		return nil, err
+	}
+	var resp SubscriptionSearchInfo
+	err = send(SubscriptionSearchContext, req, &resp, http.StatusOK)
 	if err != nil {
 		return nil, err
 	}

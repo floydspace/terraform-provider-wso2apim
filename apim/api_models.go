@@ -69,6 +69,16 @@ type APIOperation struct {
 	// TODO: Add the rest of the fields
 }
 
+type APIEndpointAdvancedConfig struct {
+	URL string `json:"url"`
+}
+
+type APIEndpointConfig struct {
+	EndpointType        string                     `json:"endpoint_type"`
+	SandboxEndpoints    *APIEndpointAdvancedConfig `json:"sandbox_endpoints,omitempty"`
+	ProductionEndpoints *APIEndpointAdvancedConfig `json:"production_endpoints,omitempty"`
+}
+
 // APIBusinessInformation represents the  API business information.
 type APIBusinessInformation struct {
 	BusinessOwner       string `json:"businessOwner,omitempty"`
@@ -91,13 +101,13 @@ type APIReqBody struct {
 	// Name of the API
 	Name string `json:"name"`
 	// A brief description about the API
-	Description *string `json:"description"`
+	Description string `json:"description,omitempty"`
 	// A string that represents the context of the user's request
 	Context string `json:"context"`
 	// The version of the API
 	Version string `json:"version"`
 	// If the provider value is not given, the user invoking the API will be used as the provider.
-	Provider *string `json:"provider,omitempty"`
+	Provider string `json:"provider,omitempty"`
 	// This describes in which status of the lifecycle the API is
 	// ThumbnailURI string `json:"thumbnailUri,omitempty"`
 	// // Swagger definition of the API which contains details about URI templates and scopes
@@ -109,8 +119,10 @@ type APIReqBody struct {
 	// DestinationStatsEnabled bool   `json:"destinationStatsEnabled,omitempty"`
 	// IsDefaultVersion        bool   `json:"isDefaultVersion"`
 	// The transport to be set. Accepted values are HTTP, WS
-	Type       *string        `json:"type,omitempty"`
-	Operations []APIOperation `json:"operations,omitempty" hash:"set"`
+	Type            string         `json:"type,omitempty"`
+	LifeCycleStatus string         `json:"lifeCycleStatus,omitempty"`
+	Policies        []string       `json:"policies,omitempty" hash:"set"`
+	Operations      []APIOperation `json:"operations,omitempty" hash:"set"`
 	// // Supported transports for the API (http and/or https).
 	// Transport []string `json:"transport" hash:"set"`
 	// // Search keywords related to the API
@@ -127,7 +139,7 @@ type APIReqBody struct {
 	// // The user roles that are able to access the API
 	// VisibleRoles     []string             `json:"visibleRoles,omitempty" hash:"set"`
 	// VisibleTenants   []string             `json:"visibleTenants,omitempty" hash:"set"`
-	// EndpointConfig   string               `json:"endpointConfig"`
+	EndpointConfig *APIEndpointConfig `json:"endpointConfig,omitempty"`
 	// EndpointSecurity *APIEndpointSecurity `json:"endpointSecurity,omitempty"`
 	// // Comma separated list of gateway environments.
 	// GatewayEnvironments string `json:"gatewayEnvironments,omitempty"`
@@ -150,16 +162,18 @@ type APIReqBody struct {
 // APICreateResp represents the response of create "API" API call.
 type APICreateResp struct {
 	// UUID of the api registry artifact
-	ID              string         `json:"id,omitempty"`
-	Name            string         `json:"name"`
-	Description     string         `json:"description"`
-	Context         string         `json:"context"`
-	Version         string         `json:"version"`
-	Provider        string         `json:"provider,omitempty"`
-	Type            string         `json:"type"`
-	LifeCycleStatus string         `json:"lifeCycleStatus"`
-	HasThumbnail    bool           `json:"hasThumbnail"`
-	Operations      []APIOperation `json:"operations" hash:"set"`
+	ID              string             `json:"id,omitempty"`
+	Name            string             `json:"name"`
+	Description     string             `json:"description"`
+	Context         string             `json:"context"`
+	Version         string             `json:"version"`
+	Provider        string             `json:"provider,omitempty"`
+	Type            string             `json:"type"`
+	LifeCycleStatus string             `json:"lifeCycleStatus"`
+	HasThumbnail    bool               `json:"hasThumbnail"`
+	Policies        []string           `json:"policies,omitempty" hash:"set"`
+	EndpointConfig  *APIEndpointConfig `json:"endpointConfig,omitempty"`
+	Operations      []APIOperation     `json:"operations,omitempty" hash:"set"`
 }
 
 // ApplicationMetadata represents name, id and key of the generated application
@@ -203,9 +217,10 @@ type SubscriptionParam struct {
 
 // SubscriptionReq represents the APIM subscription create request.
 type SubscriptionReq struct {
-	ThrottlingPolicy string `json:"throttlingPolicy"`
-	ApiID            string `json:"apiId"`
-	ApplicationID    string `json:"applicationId"`
+	ApplicationID             string `json:"applicationId"`
+	ApiID                     string `json:"apiId,omitempty"`
+	ThrottlingPolicy          string `json:"throttlingPolicy"`
+	RequestedThrottlingPolicy string `json:"requestedThrottlingPolicy,omitempty"`
 }
 
 // AppCreateReq represents the application creation request body.
@@ -272,12 +287,16 @@ type SubscriptionResp struct {
 	// The UUID of the subscription
 	SubscriptionID string `json:"subscriptionId,omitempty"`
 	// The UUID of the application
-	ApplicationId string `json:"applicationId,omitempty"`
+	ApplicationID string `json:"applicationId,omitempty"`
 	// The UUID of the application
 	ApiID string `json:"apiId"`
 	// The unique identifier of the API.
 	ApiInfo          SubscriptionRespApiInfo `json:"apiInfo"`
 	ThrottlingPolicy string                  `json:"throttlingPolicy"`
+	// The requested throttling policy
+	RequestedThrottlingPolicy string `json:"requestedThrottlingPolicy,omitempty"`
+	// The status of the subscription
+	Status string `json:"status"`
 }
 
 // SubscriptionRespApiInfo represents the API info of response of create Subscription API call.
@@ -289,16 +308,18 @@ type SubscriptionRespApiInfo struct {
 
 // APISearchInfo represents the API search information.
 type APISearchInfo struct {
-	ID              string         `json:"id"`
-	Name            string         `json:"name"`
-	Description     string         `json:"description"`
-	Context         string         `json:"context"`
-	Version         string         `json:"version"`
-	Provider        string         `json:"provider"`
-	Type            string         `json:"type"`
-	LifeCycleStatus string         `json:"lifeCycleStatus"`
-	HasThumbnail    bool           `json:"hasThumbnail"`
-	Operations      []APIOperation `json:"operations" hash:"set"`
+	ID              string             `json:"id"`
+	Name            string             `json:"name"`
+	Description     string             `json:"description"`
+	Context         string             `json:"context"`
+	Version         string             `json:"version"`
+	Provider        string             `json:"provider"`
+	Type            string             `json:"type"`
+	LifeCycleStatus string             `json:"lifeCycleStatus"`
+	HasThumbnail    bool               `json:"hasThumbnail"`
+	Policies        []string           `json:"policies" hash:"set"`
+	EndpointConfig  *APIEndpointConfig `json:"endpointConfig,omitempty"`
+	Operations      []APIOperation     `json:"operations" hash:"set"`
 }
 
 // APISearchResp represents the response of search "API" by name API call.
@@ -328,6 +349,16 @@ type ApplicationSearchResp struct {
 	List     []ApplicationSearchInfo `json:"list"`
 	Count    int                     `json:"count"`
 	Next     string                  `json:"next"`
+}
+
+type SubscriptionSearchInfo struct {
+	SubscriptionID            string                  `json:"subscriptionId"`
+	ApplicationID             string                  `json:"applicationId"`
+	ApiID                     string                  `json:"apiId"`
+	ApiInfo                   SubscriptionRespApiInfo `json:"apiInfo"`
+	ThrottlingPolicy          string                  `json:"throttlingPolicy"`
+	RequestedThrottlingPolicy string                  `json:"requestedThrottlingPolicy"`
+	Status                    string                  `json:"status"`
 }
 
 var AppPlanBindInputParameterSchemaRaw = `{

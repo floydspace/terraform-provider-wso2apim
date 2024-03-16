@@ -34,7 +34,17 @@ data "wso2apim_api" "example" {
 - `has_thumbnail` (Boolean) Whether the api has a thumbnail.
 - `lifecycle_status` (String) LifeCycle status of the api.
 - `name` (String) Name of the api.
+- `operations` (Attributes List) Operations of the api (Resources). (see [below for nested schema](#nestedatt--operations))
+- `policies` (List of String) Policies of the api.
 - `type` (String) Type of the api.
 - `version` (String) Version of the api.
+
+<a id="nestedatt--operations"></a>
+### Nested Schema for `operations`
+
+Read-Only:
+
+- `target` (String) Operation target.
+- `verb` (String) Operation verb.
 
 

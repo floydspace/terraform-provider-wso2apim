@@ -25,15 +25,17 @@ type apiDataSource struct {
 
 // apiDataSourceModel maps the data source schema data.
 type apiDataSourceModel struct {
-	ID              types.String `tfsdk:"id"`
-	Name            types.String `tfsdk:"name"`
-	Description     types.String `tfsdk:"description"`
-	Context         types.String `tfsdk:"context"`
-	Version         types.String `tfsdk:"version"`
-	Provider        types.String `tfsdk:"api_provider"`
-	Type            types.String `tfsdk:"type"`
-	LifeCycleStatus types.String `tfsdk:"lifecycle_status"`
-	HasThumbnail    types.Bool   `tfsdk:"has_thumbnail"`
+	ID              types.String                `tfsdk:"id"`
+	Name            types.String                `tfsdk:"name"`
+	Description     types.String                `tfsdk:"description"`
+	Context         types.String                `tfsdk:"context"`
+	Version         types.String                `tfsdk:"version"`
+	Provider        types.String                `tfsdk:"api_provider"`
+	Type            types.String                `tfsdk:"type"`
+	LifeCycleStatus types.String                `tfsdk:"lifecycle_status"`
+	HasThumbnail    types.Bool                  `tfsdk:"has_thumbnail"`
+	Policies        []string                    `tfsdk:"policies"`
+	Operations      []apiOperationResourceModel `tfsdk:"operations"`
 }
 
 // Metadata returns the data source type name.
@@ -82,6 +84,31 @@ func (d *apiDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, re
 				Description: "Whether the api has a thumbnail.",
 				Computed:    true,
 			},
+			"policies": schema.ListAttribute{
+				Description: "Policies of the api.",
+				ElementType: types.StringType,
+				Computed:    true,
+			},
+			"operations": schema.ListNestedAttribute{
+				Description: "Operations of the api (Resources).",
+				Computed:    true,
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						// "id": schema.StringAttribute{
+						// 	Description: "Operation ID.",
+						// 	Computed:    true,
+						// },
+						"target": schema.StringAttribute{
+							Description: "Operation target.",
+							Computed:    true,
+						},
+						"verb": schema.StringAttribute{
+							Description: "Operation verb.",
+							Computed:    true,
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -114,6 +141,16 @@ func (d *apiDataSource) Read(ctx context.Context, req datasource.ReadRequest, re
 	state.Type = types.StringValue(api.Type)
 	state.LifeCycleStatus = types.StringValue(api.LifeCycleStatus)
 	state.HasThumbnail = types.BoolValue(api.HasThumbnail)
+	state.Policies = api.Policies
+	var operations []apiOperationResourceModel
+	for _, operation := range api.Operations {
+		operations = append(operations, apiOperationResourceModel{
+			// ID:     types.StringValue(operation.ID),
+			Target: types.StringValue(operation.Target),
+			Verb:   types.StringValue(operation.Verb),
+		})
+	}
+	state.Operations = operations
 
 	// Set state
 	diags = resp.State.Set(ctx, &state)

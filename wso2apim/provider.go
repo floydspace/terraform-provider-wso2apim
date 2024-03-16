@@ -249,6 +249,7 @@ func (p *wso2apimProvider) Configure(ctx context.Context, req provider.Configure
 func (p *wso2apimProvider) DataSources(_ context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
 		NewApiDataSource,
+		NewKeyManagerDataSource,
 		NewApplicationDataSource,
 		NewSubscriptionDataSource,
 	}

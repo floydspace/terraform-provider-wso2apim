@@ -360,6 +360,28 @@ type ApplicationSearchResp struct {
 	Next     string                  `json:"next"`
 }
 
+type KeyManagerSearchInfo struct {
+	ID                         string   `json:"id"`
+	Name                       string   `json:"name"`
+	Type                       string   `json:"type"`
+	DisplayName                string   `json:"displayName"`
+	Description                string   `json:"description"`
+	Enabled                    bool     `json:"enabled"`
+	AvailableGrantTypes        []string `json:"availableGrantTypes"`
+	TokenEndpoint              string   `json:"tokenEndpoint"`
+	RevokeEndpoint             string   `json:"revokeEndpoint"`
+	EnableTokenGeneration      bool     `json:"enableTokenGeneration"`
+	EnableTokenEncryption      bool     `json:"enableTokenEncryption"`
+	EnableTokenHashing         bool     `json:"enableTokenHashing"`
+	EnableOAuthAppCreation     bool     `json:"enableOAuthAppCreation"`
+	EnableMapOAuthConsumerApps bool     `json:"enableMapOAuthConsumerApps"`
+}
+
+type KeyManagerSearchResp struct {
+	List  []KeyManagerSearchInfo `json:"list"`
+	Count int                    `json:"count"`
+}
+
 type SubscriptionSearchInfo struct {
 	SubscriptionID            string                  `json:"subscriptionId"`
 	ApplicationID             string                  `json:"applicationId"`

@@ -48,6 +48,7 @@ const (
 	APIDeleteContext                  = "delete API"
 	APISearchContext                  = "search API"
 	ApplicationSearchContext          = "search Application"
+	KeyManagerSearchContext           = "search key manager"
 	SubscriptionSearchContext         = "search Subscription"
 	ErrMsgAPPIDEmpty                  = "application id is empty"
 )
@@ -485,6 +486,58 @@ func GetSubscription(subID string) (*SubscriptionSearchInfo, error) {
 		return nil, err
 	}
 	return &resp, nil
+}
+
+func SearchKeyManager(keyManagerName string) (*KeyManagerSearchInfo, error) {
+	req, err := creatHTTPGETAPIRequest(storeKeyManagerEndpoint)
+	if err != nil {
+		return nil, err
+	}
+	var resp KeyManagerSearchResp
+	err = send(KeyManagerSearchContext, req, &resp, http.StatusOK)
+	if err != nil {
+		return nil, err
+	}
+	if resp.Count == 0 {
+		return nil, errors.New(fmt.Sprintf("couldn't find the KeyManager %s", keyManagerName))
+	}
+	var keyManager KeyManagerSearchInfo
+	for _, km := range resp.List {
+		if km.Name == keyManagerName {
+			keyManager = km
+			break
+		}
+	}
+	if keyManager.ID == "" {
+		return nil, errors.New(fmt.Sprintf("couldn't find the KeyManager %s", keyManagerName))
+	}
+	return &keyManager, nil
+}
+
+func GetKeyManager(keyManagerID string) (*KeyManagerSearchInfo, error) {
+	req, err := creatHTTPGETAPIRequest(storeKeyManagerEndpoint)
+	if err != nil {
+		return nil, err
+	}
+	var resp KeyManagerSearchResp
+	err = send(KeyManagerSearchContext, req, &resp, http.StatusOK)
+	if err != nil {
+		return nil, err
+	}
+	if resp.Count == 0 {
+		return nil, errors.New(fmt.Sprintf("couldn't find the KeyManager %s", keyManagerID))
+	}
+	var keyManager KeyManagerSearchInfo
+	for _, km := range resp.List {
+		if km.ID == keyManagerID {
+			keyManager = km
+			break
+		}
+	}
+	if keyManager.ID == "" {
+		return nil, errors.New(fmt.Sprintf("couldn't find the KeyManager %s", keyManagerID))
+	}
+	return &keyManager, nil
 }
 
 func defaultApplicationKeyGenerateReq() *ApplicationKeyGenerateRequest {

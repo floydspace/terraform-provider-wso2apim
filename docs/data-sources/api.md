@@ -31,6 +31,7 @@ data "wso2apim_api" "example" {
 - `api_provider` (String) Provider of the api.
 - `context` (String) Context of the api.
 - `description` (String) Description of the api.
+- `endpoint_config` (Attributes) Endpoint configuration of the api. (see [below for nested schema](#nestedatt--endpoint_config))
 - `has_thumbnail` (Boolean) Whether the api has a thumbnail.
 - `lifecycle_status` (String) LifeCycle status of the api.
 - `name` (String) Name of the api.
@@ -38,6 +39,32 @@ data "wso2apim_api" "example" {
 - `policies` (List of String) Policies of the api.
 - `type` (String) Type of the api.
 - `version` (String) Version of the api.
+
+<a id="nestedatt--endpoint_config"></a>
+### Nested Schema for `endpoint_config`
+
+Read-Only:
+
+- `endpoint_type` (String) Endpoint type.
+- `production_endpoints` (Attributes) Sandbox endpoints. (see [below for nested schema](#nestedatt--endpoint_config--production_endpoints))
+- `sandbox_endpoints` (Attributes) Sandbox endpoints. (see [below for nested schema](#nestedatt--endpoint_config--sandbox_endpoints))
+
+<a id="nestedatt--endpoint_config--production_endpoints"></a>
+### Nested Schema for `endpoint_config.production_endpoints`
+
+Read-Only:
+
+- `url` (String) Sandbox endpoint URL.
+
+
+<a id="nestedatt--endpoint_config--sandbox_endpoints"></a>
+### Nested Schema for `endpoint_config.sandbox_endpoints`
+
+Read-Only:
+
+- `url` (String) Sandbox endpoint URL.
+
+
 
 <a id="nestedatt--operations"></a>
 ### Nested Schema for `operations`

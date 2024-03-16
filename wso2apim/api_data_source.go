@@ -25,17 +25,18 @@ type apiDataSource struct {
 
 // apiDataSourceModel maps the data source schema data.
 type apiDataSourceModel struct {
-	ID              types.String                `tfsdk:"id"`
-	Name            types.String                `tfsdk:"name"`
-	Description     types.String                `tfsdk:"description"`
-	Context         types.String                `tfsdk:"context"`
-	Version         types.String                `tfsdk:"version"`
-	Provider        types.String                `tfsdk:"api_provider"`
-	Type            types.String                `tfsdk:"type"`
-	LifeCycleStatus types.String                `tfsdk:"lifecycle_status"`
-	HasThumbnail    types.Bool                  `tfsdk:"has_thumbnail"`
-	Policies        []string                    `tfsdk:"policies"`
-	Operations      []apiOperationResourceModel `tfsdk:"operations"`
+	ID              types.String                    `tfsdk:"id"`
+	Name            types.String                    `tfsdk:"name"`
+	Description     types.String                    `tfsdk:"description"`
+	Context         types.String                    `tfsdk:"context"`
+	Version         types.String                    `tfsdk:"version"`
+	Provider        types.String                    `tfsdk:"api_provider"`
+	Type            types.String                    `tfsdk:"type"`
+	LifeCycleStatus types.String                    `tfsdk:"lifecycle_status"`
+	HasThumbnail    types.Bool                      `tfsdk:"has_thumbnail"`
+	Policies        []string                        `tfsdk:"policies"`
+	EndpointConfig  *apiEndpointConfigResourceModel `tfsdk:"endpoint_config"`
+	Operations      []apiOperationResourceModel     `tfsdk:"operations"`
 }
 
 // Metadata returns the data source type name.
@@ -88,6 +89,36 @@ func (d *apiDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, re
 				Description: "Policies of the api.",
 				ElementType: types.StringType,
 				Computed:    true,
+			},
+			"endpoint_config": schema.SingleNestedAttribute{
+				Description: "Endpoint configuration of the api.",
+				Computed:    true,
+				Attributes: map[string]schema.Attribute{
+					"endpoint_type": schema.StringAttribute{
+						Description: "Endpoint type.",
+						Computed:    true,
+					},
+					"sandbox_endpoints": schema.SingleNestedAttribute{
+						Description: "Sandbox endpoints.",
+						Computed:    true,
+						Attributes: map[string]schema.Attribute{
+							"url": schema.StringAttribute{
+								Description: "Sandbox endpoint URL.",
+								Computed:    true,
+							},
+						},
+					},
+					"production_endpoints": schema.SingleNestedAttribute{
+						Description: "Sandbox endpoints.",
+						Computed:    true,
+						Attributes: map[string]schema.Attribute{
+							"url": schema.StringAttribute{
+								Description: "Sandbox endpoint URL.",
+								Computed:    true,
+							},
+						},
+					},
+				},
 			},
 			"operations": schema.ListNestedAttribute{
 				Description: "Operations of the api (Resources).",
@@ -142,6 +173,23 @@ func (d *apiDataSource) Read(ctx context.Context, req datasource.ReadRequest, re
 	state.LifeCycleStatus = types.StringValue(api.LifeCycleStatus)
 	state.HasThumbnail = types.BoolValue(api.HasThumbnail)
 	state.Policies = api.Policies
+	var stateEndpointConfig *apiEndpointConfigResourceModel
+	if api.EndpointConfig != nil {
+		var stateSandboxEndpoints *apiEndpointAdvancedConfigResourceModel
+		if api.EndpointConfig.SandboxEndpoints != nil {
+			stateSandboxEndpoints = &apiEndpointAdvancedConfigResourceModel{URL: types.StringValue(api.EndpointConfig.SandboxEndpoints.URL)}
+		}
+		var stateProductionEndpoints *apiEndpointAdvancedConfigResourceModel
+		if api.EndpointConfig.ProductionEndpoints != nil {
+			stateProductionEndpoints = &apiEndpointAdvancedConfigResourceModel{URL: types.StringValue(api.EndpointConfig.ProductionEndpoints.URL)}
+		}
+		stateEndpointConfig = &apiEndpointConfigResourceModel{
+			EndpointType:        types.StringValue(api.EndpointConfig.EndpointType),
+			SandboxEndpoints:    stateSandboxEndpoints,
+			ProductionEndpoints: stateProductionEndpoints,
+		}
+	}
+	state.EndpointConfig = stateEndpointConfig
 	var operations []apiOperationResourceModel
 	for _, operation := range api.Operations {
 		operations = append(operations, apiOperationResourceModel{

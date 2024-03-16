@@ -249,6 +249,7 @@ func (p *wso2apimProvider) DataSources(_ context.Context) []func() datasource.Da
 	return []func() datasource.DataSource{
 		NewApiDataSource,
 		NewApplicationDataSource,
+		NewSubscriptionDataSource,
 	}
 }
 

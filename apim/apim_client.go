@@ -43,6 +43,8 @@ const (
 	UpdateApplicationContext          = "update application"
 	UpdateSubscriptionContext         = "update subscription"
 	GenerateKeyContext                = "Generate application keys"
+	RegenerateKeyContext              = "Regenerate application keys"
+	CleanupKeysContext                = "cleanup application keys"
 	UnSubscribeContext                = "unsubscribe api"
 	ApplicationDeleteContext          = "delete application"
 	APIDeleteContext                  = "delete API"
@@ -50,6 +52,7 @@ const (
 	ApplicationSearchContext          = "search Application"
 	KeyManagerSearchContext           = "search key manager"
 	SubscriptionSearchContext         = "search Subscription"
+	ApplicationKeySearchContext       = "search application keys"
 	ErrMsgAPPIDEmpty                  = "application id is empty"
 )
 
@@ -182,11 +185,10 @@ func UpdateApplication(id string, reqBody *ApplicationCreateReq) (*ApplicationSe
 
 // GenerateKeys generates keys for the given application.
 // Returns generated keys and any error encountered.
-func GenerateKeys(appID string) (*ApplicationKeyResp, error) {
+func GenerateKeys(appID string, reqBody *ApplicationKeyGenerateRequest) (*ApplicationKeyResp, error) {
 	if appID == "" {
 		return nil, errors.New(ErrMsgAPPIDEmpty)
 	}
-	reqBody := defaultApplicationKeyGenerateReq()
 	generateApplicationKeyEndpoint, err := utils.ConstructURL(storeApplicationEndpoint, appID, "/generate-keys")
 	if err != nil {
 		return nil, errors.Wrap(err, "cannot construct endpoint")
@@ -201,6 +203,65 @@ func GenerateKeys(appID string) (*ApplicationKeyResp, error) {
 		return nil, err
 	}
 	return &resBody, nil
+}
+
+func UpdateApplicationKeys(appID string, keyMappingID string, reqBody *ApplicationKeyGenerateRequest) (*ApplicationKeyResp, error) {
+	if appID == "" {
+		return nil, errors.New(ErrMsgAPPIDEmpty)
+	}
+	endpoint, err := utils.ConstructURL(storeApplicationEndpoint, appID, "/oauth-keys", keyMappingID)
+	if err != nil {
+		return nil, errors.Wrap(err, "cannot construct endpoint")
+	}
+	req, err := creatHTTPPUTAPIRequest(endpoint, reqBody)
+	if err != nil {
+		return nil, err
+	}
+	var resBody ApplicationKeyResp
+	err = send(GenerateKeyContext, req, &resBody, http.StatusOK)
+	if err != nil {
+		return nil, err
+	}
+	return &resBody, nil
+}
+
+func RegenerateKeys(appID string, keyMappingID string) (*ApplicationKeyResp, error) {
+	if appID == "" {
+		return nil, errors.New(ErrMsgAPPIDEmpty)
+	}
+	regenerateApplicationKeyEndpoint, err := utils.ConstructURL(storeApplicationEndpoint, appID, "/oauth-keys", keyMappingID, "/regenerate-secret")
+	if err != nil {
+		return nil, errors.Wrap(err, "cannot construct endpoint")
+	}
+	req, err := creatHTTPPOSTAPIRequest(regenerateApplicationKeyEndpoint, nil)
+	if err != nil {
+		return nil, err
+	}
+	var resBody ApplicationKeyResp
+	err = send(RegenerateKeyContext, req, &resBody, http.StatusOK)
+	if err != nil {
+		return nil, err
+	}
+	return &resBody, nil
+}
+
+func CleanupKeys(appID string, keyMappingID string) error {
+	if appID == "" {
+		return errors.New(ErrMsgAPPIDEmpty)
+	}
+	endpoint, err := utils.ConstructURL(storeApplicationEndpoint, appID, "/oauth-keys", keyMappingID, "/clean-up")
+	if err != nil {
+		return err
+	}
+	req, err := creatHTTPPOSTAPIRequest(endpoint, nil)
+	if err != nil {
+		return err
+	}
+	err = send(CleanupKeysContext, req, nil, http.StatusOK)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func CreateSubscription(sub *SubscriptionReq) (*SubscriptionSearchInfo, error) {
@@ -540,13 +601,19 @@ func GetKeyManager(keyManagerID string) (*KeyManagerSearchInfo, error) {
 	return &keyManager, nil
 }
 
-func defaultApplicationKeyGenerateReq() *ApplicationKeyGenerateRequest {
-	return &ApplicationKeyGenerateRequest{
-		ValidityTime:            "3600",
-		KeyType:                 "PRODUCTION",
-		Scopes:                  []string{"am_application_scope", "default"},
-		GrantTypesToBeSupported: []string{"client_credentials", "password", "refresh_token"},
-		//SupportedGrantTypes: []string{"urn:ietf:params:oauth:grant-type:saml2-bearer", "iwa:ntlm", "refresh_token",
-		//	"client_credentials", "password"},
+func GetApplicationKeys(applicationID string, keyMappingID string) (*ApplicationKeyResp, error) {
+	endpoint, err := utils.ConstructURL(storeApplicationEndpoint, applicationID, "/oauth-keys", keyMappingID)
+	if err != nil {
+		return nil, err
 	}
+	req, err := creatHTTPGETAPIRequest(endpoint)
+	if err != nil {
+		return nil, err
+	}
+	var resp ApplicationKeyResp
+	err = send(ApplicationKeySearchContext, req, &resp, http.StatusOK)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
 }

@@ -238,8 +238,9 @@ type AppCreateRes struct {
 
 // ApplicationKeyGenerateRequest represents the application key generation request.
 type ApplicationKeyGenerateRequest struct {
+	KeyManager   string `json:"keyManager,omitempty"`
 	KeyType      string `json:"keyType"`
-	ValidityTime string `json:"validityTime"`
+	ValidityTime int64  `json:"validityTime"`
 	// The grant types that are supported by the application
 	GrantTypesToBeSupported []string `json:"grantTypesToBeSupported,omitempty"`
 	// Callback URL
@@ -255,6 +256,7 @@ type ApplicationKeyGenerateRequest struct {
 
 // ApplicationKeyResp represents the Application generate keys API call response.
 type ApplicationKeyResp struct {
+	ID string `json:"keyMappingId,omitempty"`
 	// The consumer key associated with the application and identifying the client
 	ConsumerKey string `json:"consumerKey,omitempty"`
 	// The client secret that is used to authenticate the client with the authentication server
@@ -262,11 +264,12 @@ type ApplicationKeyResp struct {
 	// The grant types that are supported by the application
 	SupportedGrantTypes []string `json:"supportedGrantTypes,omitempty"`
 	// Callback URL
-	CallbackURL string `json:"callbackUrl,omitempty"`
+	CallbackURL *string `json:"callbackUrl,omitempty"`
 	// Describes the state of the key generation.
 	KeyState string `json:"keyState,omitempty"`
 	// Describes to which endpoint the key belongs
-	KeyType string `json:"keyType,omitempty"`
+	KeyType    string `json:"keyType,omitempty"`
+	KeyManager string `json:"keyManager,omitempty"`
 	// ApplicationConfig group id (if any).
 	GroupID string `json:"groupId,omitempty"`
 	Token   *Token `json:"token,omitempty"`

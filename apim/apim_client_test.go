@@ -152,7 +152,7 @@ func TestGenerateKeys(t *testing.T) {
 
 func testGenerateKeysFailFunc() func(t *testing.T) {
 	return func(t *testing.T) {
-		_, err := GenerateKeys("")
+		_, err := GenerateKeys("", nil)
 		if err.Error() != ErrMsgAPPIDEmpty {
 			t.Error("Expecting an error : " + ErrMsgAPPIDEmpty + " got: " + err.Error())
 		}
@@ -172,7 +172,12 @@ func testGenerateKeysSuccessFunc() func(t *testing.T) {
 		}
 		httpmock.RegisterResponder(http.MethodPost, StoreTestEndpoint+StoreApplicationContext+"/123/generate-keys", responder)
 
-		got, err := GenerateKeys("123")
+		got, err := GenerateKeys("123", &ApplicationKeyGenerateRequest{
+			ValidityTime:            3600,
+			KeyType:                 "PRODUCTION",
+			Scopes:                  []string{"am_application_scope", "default"},
+			GrantTypesToBeSupported: []string{"client_credentials", "password", "refresh_token"},
+		})
 		if err != nil {
 			t.Error(err)
 		}

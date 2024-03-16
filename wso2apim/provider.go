@@ -260,6 +260,7 @@ func (p *wso2apimProvider) Resources(_ context.Context) []func() resource.Resour
 	return []func() resource.Resource{
 		NewApiResource,
 		NewApplicationResource,
+		NewApplicationKeyMappingResource,
 		NewSubscriptionResource,
 	}
 }

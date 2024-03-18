@@ -2,6 +2,10 @@ default: install
 
 generate:
 	go generate ./...
+	npx cdktf-registry-docs convert \
+		--files='**/*' \
+		--languages='typescript,python' \
+		--provider-from-registry="floydspace/wso2apim"
 
 install:
 	go install .

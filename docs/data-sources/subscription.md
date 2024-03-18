@@ -33,5 +33,3 @@ data "wso2apim_subscription" "example" {
 - `requested_throttling_policy` (String) Requested throttling policy.
 - `status` (String) Subscription status.
 - `throttling_policy` (String) Throttling policy.
-
-
